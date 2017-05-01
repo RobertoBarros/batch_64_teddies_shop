@@ -11,6 +11,7 @@ gem 'redis'
 gem 'coffee-script'
 gem 'money-rails'
 gem 'stripe'
+gem 'pagarme'
 
 gem 'sass-rails'
 gem 'jquery-rails'

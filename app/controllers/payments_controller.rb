@@ -5,25 +5,19 @@ class PaymentsController < ApplicationController
   end
 
   def create
-    customer = Stripe::Customer.create(
-      source: params[:stripeToken],
-      email:  params[:stripeEmail]
-    )
+    @amount_centavos = @order.amount_centavos
+    card_hash = params[:card_hash]
 
-    charge = Stripe::Charge.create(
-      customer:     customer.id,   # You should store this customer id and re-use it.
-      amount:       @order.amount_centavos, # or amount_pennies
-      description:  "Payment for teddy #{@order.teddy_sku} for order #{@order.id}",
-      currency:     @order.amount.currency
-    )
+    transaction = PagarMe::Transaction.new( amount: @amount_centavos, card_hash: card_hash).charge
 
-    @order.update(payment: charge.to_json, state: 'paid')
 
-    redirect_to order_path(@order)
-
-  rescue Stripe::CardError => e
-    flash[:error] = e.message
-    redirect_to new_order_payment_path(@order)
+    if transaction.status == 'paid'
+      @order.update(pagarme_id: transaction.id, state: 'paid')
+      redirect_to order_path(@order)
+    else
+      flash[:alert] = 'Não Foi possível cobrar esse cartão'
+      redirect_to new_order_payment_path(@order)
+    end
   end
 
 

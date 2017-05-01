@@ -1,17 +1,26 @@
 <h1>Purchase of teddy <%= @order.teddy_sku %></h1>
-<%= form_tag order_payments_path(@order) do %>
+<%= form_tag order_payments_path(@order), id: 'payment_form' do %>
   <article>
     <label class="amount">
       <span>Amount: <%= humanized_money_with_symbol(@order.amount) %></span>
-    </label>
+      </label>
   </article>
 
-  <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="<%= Rails.configuration.stripe[:publishable_key] %>"
-    data-name="My Teddy"
-    data-email="<%= current_user.email %>"
-    data-description="Teddy <%= @order.teddy_sku %>"
-    data-amount="<%= @order.amount_centavos %>"
-    data-currency="<%= @order.amount.currency %>"></script>
+    Número do cartão: <input type="text" id="card_number"/>
+    <br/>
+    Nome (como escrito no cartão): <input type="text" id="card_holder_name"/>
+    <br/>
+    Mês de expiração: <input type="text" id="card_expiration_month"/>
+    <br/>
+    Ano de expiração: <input type="text" id="card_expiration_year"/>
+    <br/>
+    Código de segurança: <input type="text" id="card_cvv"/>
+    <br/>
+    <div id="field_errors">
+    </div>
+    <br/>
+    <input type="submit"></input>
+
+
 
 <% end %>
